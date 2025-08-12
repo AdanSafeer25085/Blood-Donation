@@ -14,9 +14,9 @@ app.use(express.json());
 // Configure CORS to allow multiple origins
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://blood-donation-frontend.vercel.app', // Add your frontend domain here
+  'https://blood-donation-flame.vercel.app', // Your actual Vercel domain
+  'https://blood-donation-frontend.vercel.app', // Alternative frontend domain
   'https://blood-donation-frontend.netlify.app', // Alternative frontend domain
-  // Add your actual frontend domain here when you deploy
 ];
 
 app.use(cors({
