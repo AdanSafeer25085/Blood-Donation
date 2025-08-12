@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "main": "server.js",
   "engines": {
-    "node": "18.x"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "npm install",
-    "postinstall": "npm rebuild bcrypt --build-from-source"
+    "build": "npm install"
   },
   "keywords": [],
   "author": "",
@@ -18,14 +17,11 @@
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "winston": "^3.17.0"
-  },
-  "devDependencies": {
-    "node-gyp": "^10.0.1"
   }
 }
