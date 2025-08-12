@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config/api';
 
 function NearbyDonors({ user }) {
   const [donors, setDonors] = useState([]);
@@ -20,7 +21,7 @@ function NearbyDonors({ user }) {
         ...searchFilters
       }).toString();
       
-      const response = await fetch(`http://localhost:5000/nearby-donors?${queryParams}`);
+      const response = await fetch(`${API_BASE_URL}/nearby-donors?${queryParams}`);
       if (response.ok) {
         const data = await response.json();
         setDonors(data);

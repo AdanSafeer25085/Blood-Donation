@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import API_BASE_URL from '../config/api';
 
 function FindDonorsPage() {
   const location = useLocation();
@@ -19,7 +20,7 @@ function FindDonorsPage() {
 
   const fetchDonors = async () => {
     try {
-      const donorResponse = await fetch("http://localhost:5000/get-form-data");
+      const donorResponse = await fetch(`${API_BASE_URL}/get-form-data`);
       if (!donorResponse.ok) throw new Error("Failed to fetch donors");
       const donorsData = await donorResponse.json();
       setDonors(donorsData);
@@ -29,7 +30,7 @@ function FindDonorsPage() {
       for (const donor of donorsData) {
         try {
           const reviewResponse = await fetch(
-            `http://localhost:5000/get-reviews/${donor.id}`
+            `${API_BASE_URL}/get-reviews/${donor.id}`
           );
           if (reviewResponse.ok) {
             const donorReviews = await reviewResponse.json();
@@ -56,7 +57,7 @@ function FindDonorsPage() {
     if (!review) return;
 
     try {
-      const response = await fetch("http://localhost:5000/submit-review", {
+      const response = await fetch(`${API_BASE_URL}/submit-review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ donorId, review }),
@@ -78,7 +79,7 @@ function FindDonorsPage() {
   const contactDonor = async (donorId, donorName) => {
     if (requestId) {
       try {
-        const response = await fetch("http://localhost:5000/contact-donor", {
+        const response = await fetch(`${API_BASE_URL}/contact-donor`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 

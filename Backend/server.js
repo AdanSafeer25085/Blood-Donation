@@ -10,7 +10,28 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
+
+// Configure CORS to allow multiple origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://blood-donation-frontend.vercel.app', // Add your frontend domain here
+  'https://blood-donation-frontend.netlify.app', // Alternative frontend domain
+  // Add your actual frontend domain here when you deploy
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 // Logger setup
 const logger = winston.createLogger({

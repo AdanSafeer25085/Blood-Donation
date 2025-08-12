@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config/api';
 
 function DonationHistory({ user }) {
   const [donations, setDonations] = useState([]);
@@ -11,7 +12,7 @@ function DonationHistory({ user }) {
 
   const fetchDonationHistory = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/user-donations/${user.id}`);
+      const response = await fetch(`${API_BASE_URL}/user-donations/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setDonations(data);

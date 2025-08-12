@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Dashboard from '../Dashboard/Dashboard';
+import API_BASE_URL from '../../config/api';
 
 function UserDetails({ user, onLogout }) {
   const [location, setLocation] = useState(user.location);
@@ -27,7 +28,7 @@ function UserDetails({ user, onLogout }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/update-user-details",
+        `${API_BASE_URL}/update-user-details`,
         { userId: user.id, location, mobileNumber }
       );
       setMessage(response.data.message);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config/api';
 
 function BloodRequests({ user }) {
   const [requests, setRequests] = useState([]);
@@ -16,7 +17,7 @@ function BloodRequests({ user }) {
 
   const fetchBloodRequests = async () => {
     try {
-      const response = await fetch('http://localhost:5000/blood-requests');
+      const response = await fetch(`${API_BASE_URL}/blood-requests`);
       if (response.ok) {
         const data = await response.json();
         setRequests(data);
@@ -30,7 +31,7 @@ function BloodRequests({ user }) {
 
   const fetchMyRequests = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/my-blood-requests/${user.id}`);
+      const response = await fetch(`${API_BASE_URL}/my-blood-requests/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setMyRequests(data);
@@ -42,7 +43,7 @@ function BloodRequests({ user }) {
 
   const updateRequestStatus = async (requestId, status) => {
     try {
-      const response = await fetch(`http://localhost:5000/update-request-status/${requestId}`, {
+      const response = await fetch(`${API_BASE_URL}/update-request-status/${requestId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +64,7 @@ function BloodRequests({ user }) {
   const deleteRequest = async (requestId) => {
     if (window.confirm('Are you sure you want to delete this request?')) {
       try {
-        const response = await fetch(`http://localhost:5000/delete-blood-request/${requestId}`, {
+        const response = await fetch(`${API_BASE_URL}/delete-blood-request/${requestId}`, {
           method: 'DELETE',
         });
 
@@ -80,7 +81,7 @@ function BloodRequests({ user }) {
 
   const handleRespond = async (requestId, responseType) => {
     try {
-      const response = await fetch(`http://localhost:5000/respond-to-request/${requestId}`, {
+      const response = await fetch(`${API_BASE_URL}/respond-to-request/${requestId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -578,7 +579,7 @@ function CreateRequestModal({ user, onClose, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/create-blood-request', {
+      const response = await fetch(`${API_BASE_URL}/create-blood-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

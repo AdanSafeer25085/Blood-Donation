@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import API_BASE_URL from '../config/api';
 
 // Import dashboard components
 import DashboardStats from '../Components/Dashboard/DashboardStats';
@@ -29,7 +30,7 @@ function DashboardPage() {
   const fetchNotifications = async () => {
     if (!user) return;
     try {
-      const response = await fetch(`http://localhost:5000/notifications/${user.id}`);
+      const response = await fetch(`${API_BASE_URL}/notifications/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setNotifications(data);

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../../config/api';
 
 function ProfileSettings({ user }) {
   const [activeTab, setActiveTab] = useState('personal');
@@ -28,7 +29,7 @@ function ProfileSettings({ user }) {
 
   const handleSaveProfile = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/update-profile/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/update-profile/${user.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +51,7 @@ function ProfileSettings({ user }) {
 
   const handleSavePreferences = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/update-preferences/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/update-preferences/${user.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

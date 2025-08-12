@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config/api';
 
 function DonationScheduler({ user }) {
   const [selectedDate, setSelectedDate] = useState('');
@@ -22,7 +23,7 @@ function DonationScheduler({ user }) {
 
   const fetchHospitals = async () => {
     try {
-      const response = await fetch('http://localhost:5000/donation-centers');
+      const response = await fetch(`${API_BASE_URL}/donation-centers`);
       if (response.ok) {
         const data = await response.json();
         setHospitals(data);
@@ -34,7 +35,7 @@ function DonationScheduler({ user }) {
 
   const checkEligibility = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/check-eligibility/${user.id}`);
+      const response = await fetch(`${API_BASE_URL}/check-eligibility/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setEligibilityStatus(data);
@@ -46,7 +47,7 @@ function DonationScheduler({ user }) {
 
   const fetchAvailableSlots = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/available-slots?date=${selectedDate}&hospital=${selectedHospital}`);
+      const response = await fetch(`${API_BASE_URL}/available-slots?date=${selectedDate}&hospital=${selectedHospital}`);
       if (response.ok) {
         const data = await response.json();
         setAvailableSlots(data);
@@ -64,7 +65,7 @@ function DonationScheduler({ user }) {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/schedule-donation', {
+      const response = await fetch(`${API_BASE_URL}/schedule-donation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

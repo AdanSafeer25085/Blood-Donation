@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import API_BASE_URL from '../config/api';
 
 function BloodRequestsPublic() {
   const [requests, setRequests] = useState([]);
@@ -12,7 +13,7 @@ function BloodRequestsPublic() {
 
   const fetchBloodRequests = async () => {
     try {
-      const response = await fetch('http://localhost:5000/blood-requests-public');
+      const response = await fetch(`${API_BASE_URL}/blood-requests-public`);
       if (response.ok) {
         const data = await response.json();
         setRequests(data);

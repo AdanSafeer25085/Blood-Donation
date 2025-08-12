@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import LoginForm from "./login-form";
 import UserDetails from "./LoginUserDetails";
+import API_BASE_URL from '../../config/api';
 
 function ExampleV2({ onClose }) {
   const [email, setEmail] = useState("");
@@ -81,7 +82,7 @@ function ExampleV2({ onClose }) {
       setIsSubmitting(true);
 
       try {
-        const response = await fetch("http://localhost:5000/submit-form", {
+        const response = await fetch(`${API_BASE_URL}/submit-form`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

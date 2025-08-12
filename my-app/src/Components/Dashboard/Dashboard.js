@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config/api';
 import DashboardStats from './DashboardStats';
 import DonationHistory from './DonationHistory';
 import BloodRequests from './BloodRequests';
@@ -19,7 +20,7 @@ function Dashboard({ user, onLogout }) {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/notifications/${user.id}`);
+      const response = await fetch(`${API_BASE_URL}/notifications/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setNotifications(data);

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from '../../config/api';
 
 function GetBloodForm({ onBack, setViewDisplayData }) {
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ function GetBloodForm({ onBack, setViewDisplayData }) {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch("http://localhost:5000/submit-blood-request", {
+      const response = await fetch(`${API_BASE_URL}/submit-blood-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

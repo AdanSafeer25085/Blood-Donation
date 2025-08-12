@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../../config/api';
 
 function DashboardStats({ user }) {
   const [stats, setStats] = useState({
@@ -16,7 +17,7 @@ function DashboardStats({ user }) {
 
   const fetchUserStats = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/user-stats/${user.id}`);
+      const response = await fetch(`${API_BASE_URL}/user-stats/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setStats(data);
