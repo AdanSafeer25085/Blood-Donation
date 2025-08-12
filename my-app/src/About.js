@@ -1,0 +1,34 @@
+import React from 'react';
+
+const AboutUs = () => {
+  return (
+    <div id='about-us' className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+      {/* <h1 className="text-4xl text-center text-red-600 font-semibold mb-6">About Us</h1>
+      
+      <p className="text-lg text-gray-700 mb-6">
+        At <strong className="text-red-600">[Your Website Name]</strong>, we believe in the power of community, compassion, and saving lives. We are a dedicated platform bringing together individuals, hospitals, and organizations to make blood donation simple, accessible, and impactful. Every day, countless lives are saved thanks to the generosity of people like you.
+      </p>
+
+      <h2 className="text-2xl text-red-600 font-semibold mt-6 mb-4">Our Mission</h2>
+      <p className="text-lg text-gray-700 mb-6">
+        Our mission is to bridge the gap between those in need of blood and those willing to give. Whether you're a first-time donor or a regular contributor, we are here to support you at every step of the donation process, ensuring it’s safe, easy, and rewarding. Through our platform, we connect donors with medical facilities in need, helping to ensure that life-saving blood is always available.
+      </p>
+
+      <h2 className="text-2xl text-red-600 font-semibold mt-6 mb-4">Why We Do It</h2>
+      <p className="text-lg text-gray-700 mb-6">
+        Every donation counts. A single pint of blood can save up to three lives. From accident victims to those battling serious illnesses, there are countless people who depend on the kindness of donors like you. Blood shortages are a constant challenge, and we are committed to raising awareness and making donation opportunities accessible to everyone.
+      </p>
+
+      <h2 className="text-2xl text-red-600 font-semibold mt-6 mb-4">Our Promise</h2>
+      <p className="text-lg text-gray-700 mb-6">
+        We are dedicated to providing an easy-to-use, transparent platform where you can find reliable information, locate donation centers, and track your contributions. Safety is our top priority, and we work closely with accredited health professionals to ensure that each donation is handled with the utmost care.
+      </p>
+
+      <p className="text-xl text-gray-700 text-center font-semibold mt-6">
+        Join us today and be a part of something extraordinary. Together, we can make a real difference, one donation at a time.
+      </p> */}
+    </div>
+  );
+};
+
+export default AboutUs;

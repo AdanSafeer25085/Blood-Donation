@@ -1,0 +1,10 @@
+.baloo-bhaijaan-2-custom {
+  font-family: 'Baloo Bhaijaan 2', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400; /* Change value between 400 to 800 if needed */
+  font-style: normal;
+}
+html {
+  scroll-behavior: smooth;
+}
+

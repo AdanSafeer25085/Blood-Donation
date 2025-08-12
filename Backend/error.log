@@ -1,0 +1,7 @@
+{"code":"42703","details":null,"hint":"Perhaps you meant to reference the column \"users.firstname\".","level":"error","message":"Error fetching donors: column users.firstName does not exist","timestamp":"2025-08-12T15:19:09.031Z"}
+{"code":"42703","details":null,"hint":"Perhaps you meant to reference the column \"users.firstname\".","level":"error","message":"Error fetching donors: column users.firstName does not exist","timestamp":"2025-08-12T15:19:09.286Z"}
+{"code":"PGRST204","details":null,"hint":null,"level":"error","message":"Database error: Could not find the 'bloodGroup' column of 'users' in the schema cache","timestamp":"2025-08-12T15:19:59.421Z"}
+{"code":"PGRST204","details":null,"hint":null,"level":"error","message":"Database error: Could not find the 'bloodGroup' column of 'users' in the schema cache","timestamp":"2025-08-12T15:20:29.017Z"}
+{"code":"PGRST204","details":null,"hint":null,"level":"error","message":"Database error: Could not find the 'bloodGroup' column of 'users' in the schema cache","timestamp":"2025-08-12T15:21:44.968Z"}
+{"code":"42703","details":null,"hint":"Perhaps you meant to reference the column \"users.firstname\".","level":"error","message":"Error fetching donors: column users.firstName does not exist","timestamp":"2025-08-12T15:22:15.698Z"}
+{"code":"PGRST204","details":null,"hint":null,"level":"error","message":"Database error: Could not find the 'bloodGroup' column of 'users' in the schema cache","timestamp":"2025-08-12T15:23:45.264Z"}
