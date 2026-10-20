@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import ExampleV2 from "../Components/Form/form";
 import GetBloodForm from "../Components/Form/getForm";
 import DisplayData from "../Components/Form/getBloodForm";
+import { Icon } from "../Components/icons";
 
 function RegisterPage() {
-  const [showChoice, setShowChoice] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [showGetBloodForm, setShowGetBloodForm] = useState(false);
+  const [searchParams] = useSearchParams();
+  // ?action=donate or ?action=request opens that form directly (e.g. from
+  // the home-page hero buttons) so the user isn't asked to choose twice.
+  const action = searchParams.get('action');
+  const [showChoice, setShowChoice] = useState(action !== 'donate' && action !== 'request');
+  const [showForm, setShowForm] = useState(action === 'donate');
+  const [showGetBloodForm, setShowGetBloodForm] = useState(action === 'request');
   const [showDisplayData, setShowDisplayData] = useState(false);
 
   const handleFormSubmit = () => {
@@ -62,7 +67,7 @@ function RegisterPage() {
                   setShowChoice(false);
                 }}
               >
-                <div className="text-4xl mb-2">🩸</div>
+                <Icon name="droplet" className="w-9 h-9 mx-auto mb-2" />
                 <div className="text-lg">Donate Blood</div>
                 <div className="text-sm text-gray-600 mt-1">Register as a blood donor</div>
               </div>
@@ -73,7 +78,7 @@ function RegisterPage() {
                   setShowChoice(false);
                 }}
               >
-                <div className="text-4xl mb-2">🆘</div>
+                <Icon name="request" className="w-9 h-9 mx-auto mb-2" />
                 <div className="text-lg">Request Blood</div>
                 <div className="text-sm text-gray-600 mt-1">Find blood donors for urgent needs</div>
               </div>

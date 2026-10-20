@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "./Nav/LanguageContext";
+import { Icon } from "../icons";
 
 function Header() {
   const { t } = useLanguage();
@@ -28,22 +29,22 @@ function Header() {
 
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            to="/register"
-            className="bg-[#b20e0e] hover:bg-red-700 transition-colors px-8 py-3 rounded-lg font-semibold text-lg shadow-lg"
+            to="/register?action=donate"
+            className="bg-[#b20e0e] hover:bg-red-700 transition-colors px-8 py-3 rounded-lg font-semibold text-lg shadow-lg inline-flex items-center justify-center gap-2"
           >
-            🩸 {t("hero.donate")}
+            <Icon name="droplet" className="w-5 h-5" /> {t("hero.donate")}
           </Link>
           <Link
-            to="/register"
-            className="bg-white text-[#b20e0e] hover:bg-gray-100 transition-colors px-8 py-3 rounded-lg font-semibold text-lg shadow-lg"
+            to="/register?action=request"
+            className="bg-white text-[#b20e0e] hover:bg-gray-100 transition-colors px-8 py-3 rounded-lg font-semibold text-lg shadow-lg inline-flex items-center justify-center gap-2"
           >
-            🆘 {t("hero.request")}
+            <Icon name="request" className="w-5 h-5" /> {t("hero.request")}
           </Link>
           <Link
             to="/find-donors"
-            className="border-2 border-white hover:bg-white hover:text-[#b20e0e] transition-colors px-8 py-3 rounded-lg font-semibold text-lg"
+            className="border-2 border-white hover:bg-white hover:text-[#b20e0e] transition-colors px-8 py-3 rounded-lg font-semibold text-lg inline-flex items-center justify-center gap-2"
           >
-            🔍 {t("hero.findDonors")}
+            <Icon name="mapPin" className="w-5 h-5" /> {t("hero.findDonors")}
           </Link>
         </div>
       </div>
