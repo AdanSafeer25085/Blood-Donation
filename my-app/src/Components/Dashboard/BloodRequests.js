@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import API_BASE_URL from '../../config/api';
+import {
+  getActiveRequests,
+  getMyRequests,
+  updateRequestStatus as updateRequestStatusService,
+  deleteRequest as deleteRequestService,
+  respondToRequest,
+  createRequest,
+} from '../../services/bloodRequests.service';
 
 function BloodRequests({ user }) {
   const [requests, setRequests] = useState([]);
@@ -17,11 +24,8 @@ function BloodRequests({ user }) {
 
   const fetchBloodRequests = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/blood-requests`);
-      if (response.ok) {
-        const data = await response.json();
-        setRequests(data);
-      }
+      const data = await getActiveRequests();
+      setRequests(data);
     } catch (error) {
       console.error('Error fetching blood requests:', error);
     } finally {
@@ -31,11 +35,8 @@ function BloodRequests({ user }) {
 
   const fetchMyRequests = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/my-blood-requests/${user.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setMyRequests(data);
-      }
+      const data = await getMyRequests(user.id);
+      setMyRequests(data);
     } catch (error) {
       console.error('Error fetching my requests:', error);
     }
@@ -43,18 +44,9 @@ function BloodRequests({ user }) {
 
   const updateRequestStatus = async (requestId, status) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/update-request-status/${requestId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      if (response.ok) {
-        fetchMyRequests(); // Refresh my requests
-        alert(`Request marked as ${status}`);
-      }
+      await updateRequestStatusService(requestId, status);
+      fetchMyRequests(); // Refresh my requests
+      alert(`Request marked as ${status}`);
     } catch (error) {
       console.error('Error updating request status:', error);
       alert('Failed to update request status');
@@ -64,14 +56,9 @@ function BloodRequests({ user }) {
   const deleteRequest = async (requestId) => {
     if (window.confirm('Are you sure you want to delete this request?')) {
       try {
-        const response = await fetch(`${API_BASE_URL}/delete-blood-request/${requestId}`, {
-          method: 'DELETE',
-        });
-
-        if (response.ok) {
-          fetchMyRequests(); // Refresh my requests
-          alert('Request deleted successfully');
-        }
+        await deleteRequestService(requestId);
+        fetchMyRequests(); // Refresh my requests
+        alert('Request deleted successfully');
       } catch (error) {
         console.error('Error deleting request:', error);
         alert('Failed to delete request');
@@ -81,22 +68,9 @@ function BloodRequests({ user }) {
 
   const handleRespond = async (requestId, responseType) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/respond-to-request/${requestId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          donorId: user.id,
-          responseType: responseType, // 'willing', 'maybe', 'cannot'
-          message: ''
-        }),
-      });
-
-      if (response.ok) {
-        alert(`Response sent! Thank you for ${responseType === 'willing' ? 'being willing to help' : 'responding'}.`);
-        fetchBloodRequests(); // Refresh the list
-      }
+      await respondToRequest({ requestId, donorId: user.id, responseType, message: '' });
+      alert(`Response sent! Thank you for ${responseType === 'willing' ? 'being willing to help' : 'responding'}.`);
+      fetchBloodRequests(); // Refresh the list
     } catch (error) {
       console.error('Error responding to request:', error);
       alert('Failed to send response. Please try again.');
@@ -579,25 +553,32 @@ function CreateRequestModal({ user, onClose, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_BASE_URL}/create-blood-request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const newRequest = await createRequest(
+        {
           ...formData,
-          requesterId: user.id
-        }),
+          requesterName: `${user.firstName} ${user.lastName}`.trim(),
+          relationToPatient: 'Self',
+        },
+        user.id
+      );
+      // Shape for the feed card (bloodType/priority/unitsNeeded).
+      onSubmit({
+        id: newRequest.id,
+        patientName: newRequest.patientName,
+        bloodType: newRequest.bloodGroup,
+        priority: newRequest.urgency,
+        location: newRequest.location,
+        hospital: newRequest.hospital,
+        unitsNeeded: newRequest.unitsNeeded,
+        contactNumber: newRequest.contactNumber,
+        createdAt: newRequest.createdAt,
+        message: newRequest.description,
+        deadline: newRequest.neededBy,
       });
-
-      if (response.ok) {
-        const newRequest = await response.json();
-        onSubmit(newRequest);
-        alert('Blood request created successfully!');
-      }
+      alert('Blood request created successfully!');
     } catch (error) {
       console.error('Error creating request:', error);
-      alert('Failed to create request. Please try again.');
+      alert(error.message || 'Failed to create request. Please try again.');
     }
   };
 

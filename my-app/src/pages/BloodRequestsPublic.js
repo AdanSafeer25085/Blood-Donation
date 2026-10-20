@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import API_BASE_URL from '../config/api';
+import { getPublicRequests } from '../services/bloodRequests.service';
 
 function BloodRequestsPublic() {
   const [requests, setRequests] = useState([]);
@@ -13,11 +13,8 @@ function BloodRequestsPublic() {
 
   const fetchBloodRequests = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/blood-requests-public`);
-      if (response.ok) {
-        const data = await response.json();
-        setRequests(data);
-      }
+      const data = await getPublicRequests();
+      setRequests(data);
     } catch (error) {
       console.error('Error fetching blood requests:', error);
     } finally {

@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import { fetchProfile, mapProfile, logout as doLogout } from '../services/auth.service';
 
 const AuthContext = createContext();
 
@@ -14,40 +16,54 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is already logged in
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
-    
-    if (token && savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing saved user:', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
+  // Load the profile for a Supabase session and expose it as `user`.
+  const loadUserFromSession = async (session) => {
+    if (!session?.user) {
+      setUser(null);
+      return;
     }
-    setLoading(false);
+    try {
+      const profile = await fetchProfile(session.user.id);
+      setUser(mapProfile(profile, session.user));
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    let active = true;
+
+    // Initial session on page load.
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!active) return;
+      await loadUserFromSession(session);
+      setLoading(false);
+    });
+
+    // React to sign-in / sign-out / token refresh.
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      loadUserFromSession(session);
+    });
+
+    return () => {
+      active = false;
+      data.subscription.unsubscribe();
+    };
   }, []);
 
+  // Called by login screens after a successful sign-in. The auth listener
+  // also fires, but setting it here avoids a flash.
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await doLogout();
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
   };
 
-  const value = {
-    user,
-    login,
-    logout,
-    loading
-  };
+  const value = { user, login, logout, loading };
 
   return (
     <AuthContext.Provider value={value}>

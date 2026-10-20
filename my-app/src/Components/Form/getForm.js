@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API_BASE_URL from '../../config/api';
+import { createRequest } from '../../services/bloodRequests.service';
+import { getCurrentUser } from '../../services/auth.service';
 
 function GetBloodForm({ onBack, setViewDisplayData }) {
   const navigate = useNavigate();
@@ -95,22 +96,10 @@ function GetBloodForm({ onBack, setViewDisplayData }) {
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      const response = await fetch(`${API_BASE_URL}/submit-blood-request`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Server responded with error:', response.status, errorText);
-        setMessage(`Server error (${response.status}): ${errorText}`);
-        return;
-      }
-
-      const result = await response.json();
+      const currentUser = await getCurrentUser();
+      const result = await createRequest(formData, currentUser?.id || null);
       setMessage("Blood request submitted successfully! You can now search for donors or wait for donors to contact you.");
       
       // Show options to user instead of auto-redirecting
@@ -127,7 +116,7 @@ function GetBloodForm({ onBack, setViewDisplayData }) {
             state: { 
               bloodGroup: formData.bloodGroup, 
               location: formData.location,
-              requestId: result.requestId 
+              requestId: result.id 
             } 
           });
         } else {

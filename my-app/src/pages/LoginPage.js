@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import API_BASE_URL from '../config/api';
+import { login as loginService } from '../services/auth.service';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -19,32 +19,13 @@ function LoginPage() {
     setIsLoading(true);
     
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        // Store token and user data
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('user', JSON.stringify(result.user));
-        
-        // Update auth context
-        login(result.user);
-        
-        // Navigate to dashboard
-        navigate('/dashboard');
-      } else {
-        setMessage(result.error || 'Login failed. Please try again.');
-      }
+      const user = await loginService(formData);
+      // Supabase manages the session/token; AuthContext picks it up.
+      login(user);
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error during login:', error);
-      setMessage('Network error. Please check your connection and try again.');
+      setMessage(error.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

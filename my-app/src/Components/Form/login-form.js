@@ -1,5 +1,5 @@
 import { useState } from "react";
-import API_BASE_URL from '../../config/api';
+import { login as loginService } from '../../services/auth.service';
 
 function LoginForm({ onLoginSuccess, onClose, onSwitchToRegister }) {
   const [email, setEmail] = useState("");
@@ -13,27 +13,11 @@ function LoginForm({ onLoginSuccess, onClose, onSwitchToRegister }) {
     setIsLoading(true);
     
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        // Store token and user data
-        localStorage.setItem("token", result.token);
-        localStorage.setItem("user", JSON.stringify(result.user));
-        onLoginSuccess(result.user);
-      } else {
-        setMessage(result.error || "Login failed. Please try again.");
-      }
+      const user = await loginService({ email, password });
+      onLoginSuccess(user);
     } catch (error) {
       console.error("Error during login:", error);
-      setMessage("Network error. Please check your connection and try again.");
+      setMessage(error.message || "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }

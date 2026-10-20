@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API_BASE_URL from '../../config/api';
+import { getUserStats } from '../../services/donations.service';
 
 function DashboardStats({ user }) {
   const [stats, setStats] = useState({
@@ -17,11 +17,8 @@ function DashboardStats({ user }) {
 
   const fetchUserStats = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/user-stats/${user.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data);
-      }
+      const data = await getUserStats(user.id);
+      setStats(data);
     } catch (error) {
       console.error('Error fetching stats:', error);
     }

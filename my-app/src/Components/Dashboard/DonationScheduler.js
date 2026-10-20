@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import API_BASE_URL from '../../config/api';
+import { getCenters, getAvailableSlots } from '../../services/centers.service';
+import { checkEligibility as checkEligibilityService, scheduleDonation } from '../../services/donations.service';
 
 function DonationScheduler({ user }) {
   const [selectedDate, setSelectedDate] = useState('');
@@ -23,11 +24,8 @@ function DonationScheduler({ user }) {
 
   const fetchHospitals = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/donation-centers`);
-      if (response.ok) {
-        const data = await response.json();
-        setHospitals(data);
-      }
+      const data = await getCenters();
+      setHospitals(data);
     } catch (error) {
       console.error('Error fetching hospitals:', error);
     }
@@ -35,11 +33,8 @@ function DonationScheduler({ user }) {
 
   const checkEligibility = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/check-eligibility/${user.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setEligibilityStatus(data);
-      }
+      const data = await checkEligibilityService(user.id);
+      setEligibilityStatus(data);
     } catch (error) {
       console.error('Error checking eligibility:', error);
     }
@@ -47,11 +42,8 @@ function DonationScheduler({ user }) {
 
   const fetchAvailableSlots = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/available-slots?date=${selectedDate}&hospital=${selectedHospital}`);
-      if (response.ok) {
-        const data = await response.json();
-        setAvailableSlots(data);
-      }
+      const data = await getAvailableSlots({ date: selectedDate, centerId: selectedHospital });
+      setAvailableSlots(data);
     } catch (error) {
       console.error('Error fetching slots:', error);
     }
@@ -65,33 +57,22 @@ function DonationScheduler({ user }) {
 
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/schedule-donation`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          donorId: user.id,
-          date: selectedDate,
-          time: selectedTime,
-          hospitalId: selectedHospital,
-        }),
+      const center = hospitals.find((h) => h.id === selectedHospital);
+      await scheduleDonation({
+        donorId: user.id,
+        date: selectedDate,
+        time: selectedTime,
+        centerId: selectedHospital,
+        hospital: center ? center.name : null,
       });
-
-      if (response.ok) {
-        const result = await response.json();
-        alert('Donation scheduled successfully! You will receive a confirmation email.');
-        // Reset form
-        setSelectedDate('');
-        setSelectedTime('');
-        setSelectedHospital('');
-      } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to schedule donation');
-      }
+      alert('Donation scheduled successfully!');
+      // Reset form
+      setSelectedDate('');
+      setSelectedTime('');
+      setSelectedHospital('');
     } catch (error) {
       console.error('Error scheduling donation:', error);
-      alert('Failed to schedule donation. Please try again.');
+      alert(error.message || 'Failed to schedule donation. Please try again.');
     } finally {
       setLoading(false);
     }

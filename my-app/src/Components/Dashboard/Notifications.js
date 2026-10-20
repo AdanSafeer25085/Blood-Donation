@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import {
+  markAsRead as markAsReadService,
+  deleteNotification as deleteNotificationService,
+} from '../../services/notifications.service';
 
 function Notifications({ user, notifications: initialNotifications }) {
   const [notifications, setNotifications] = useState(initialNotifications || [
@@ -68,17 +72,22 @@ function Notifications({ user, notifications: initialNotifications }) {
   };
 
   const markAsRead = (id) => {
-    setNotifications(notifications.map(notif => 
+    setNotifications(notifications.map(notif =>
       notif.id === id ? { ...notif, read: true } : notif
     ));
+    markAsReadService(id).catch((e) => console.error('markAsRead failed:', e));
   };
 
   const markAllAsRead = () => {
+    notifications
+      .filter((n) => !n.read)
+      .forEach((n) => markAsReadService(n.id).catch(() => {}));
     setNotifications(notifications.map(notif => ({ ...notif, read: true })));
   };
 
   const deleteNotification = (id) => {
     setNotifications(notifications.filter(notif => notif.id !== id));
+    deleteNotificationService(id).catch((e) => console.error('delete failed:', e));
   };
 
   const handleAction = (notification) => {

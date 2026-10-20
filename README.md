@@ -1,85 +1,84 @@
 # Blood Donation System
 
-A full-stack blood donation management system built with React and Node.js, powered by Supabase.
+A React single-page app backed directly by **Supabase** (PostgreSQL + Auth).
+There is **no custom backend server** — the frontend talks to Supabase using
+the public anon key and Row Level Security.
 
 ## Tech Stack
 
-- **Frontend**: React, Tailwind CSS, Axios
-- **Backend**: Node.js, Express.js
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: JWT
+- **Frontend**: React 18, Create React App, Tailwind CSS, React Router
+- **Database + Auth**: Supabase (PostgreSQL, Supabase Auth, Row Level Security)
 
-## Prerequisites
+## Architecture
 
-- Node.js v20+
-- Supabase account and project
-
-## Quick Start
-
-### Backend Setup
-
-1. Navigate to backend directory:
-```bash
-cd Backend
+```
+my-app/
+  src/
+    lib/supabaseClient.js     # one shared Supabase client (reads env vars)
+    services/                 # all database/auth access lives here
+      auth.service.js         # sign up / in / out + profile mapping
+      donors.service.js       # donor directory + search + nearby
+      reviews.service.js      # donor reviews
+      bloodRequests.service.js# requests, responses, donor contacts
+      donations.service.js    # history, stats, eligibility, scheduling
+      centers.service.js      # donation centers + time slots
+      notifications.service.js# per-user notifications
+    contexts/AuthContext.js   # session state from Supabase
+    pages/ , Components/       # UI only — they call the services
+supabase/
+  migrations/                 # ordered SQL to build a fresh database
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+The UI never calls Supabase directly; it imports from `services/`. To change
+the backend you only touch the service layer, which keeps re-engineering easy.
 
-3. Start the server:
-```bash
-npm start
-```
-The backend will run on http://localhost:5000
+## Setup on a fresh Supabase account
 
-### Frontend Setup
+### 1. Create the database
 
-1. Navigate to frontend directory:
+1. Create a project at https://supabase.com.
+2. Open **SQL Editor** and run the files in `supabase/migrations/` **in order**:
+   `01_init.sql` → `02_profiles.sql` → `03_reviews.sql` → `04_blood_requests.sql`
+   → `05_donation_centers.sql` → `06_donations.sql` → `07_notifications.sql`
+   → `08_seed.sql` (optional demo data).
+   Each file is safe to re-run.
+
+### 2. Configure Auth
+
+In **Authentication → Providers → Email**, for easiest local testing you can
+turn **"Confirm email" OFF** so new users can sign in immediately after
+registering. (Leave it ON if you want real email confirmation.)
+
+### 3. Run the app
+
 ```bash
 cd my-app
-```
-
-2. Install dependencies:
-```bash
+cp .env.example .env     # then edit .env with your project URL + anon key
 npm install
-```
-
-3. Start the application:
-```bash
 npm start
 ```
-The frontend will run on http://localhost:3000
 
-## Environment Variables
+`.env` must contain (from **Supabase → Settings → API**):
 
-Backend `.env` file:
 ```
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-PORT=5000
-CORS_ORIGIN=http://localhost:3000
-JWT_SECRET=your_jwt_secret
+REACT_APP_SUPABASE_URL=https://YOUR-PROJECT-ref.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=your-anon-public-key
 ```
+
+CRA only reads env vars at startup, so restart `npm start` after editing `.env`.
+The app runs on http://localhost:3000.
 
 ## Features
 
-- User registration and authentication
-- Blood donor management
-- Blood request submission
-- Donor search by blood group and location
-- Review system for donors
-- User profile updates
+- Email/password auth via Supabase Auth
+- Donor directory, search, and reviews
+- Blood requests (public + per-user), donor responses and contacts
+- Donation history, computed stats and eligibility, appointment scheduling
+- Per-user notifications
 
-## API Endpoints
+## Data model
 
-- `GET /get-form-data` - Fetch all donors
-- `POST /submit-form` - Register new user
-- `POST /login` - User login
-- `POST /submit-review` - Submit donor review
-- `GET /get-reviews/:donorId` - Get reviews for a donor
-- `POST /submit-get-blood-form` - Submit blood request
-- `POST /update-user-details` - Update user profile
-- `GET /search-donors` - Search donors
-- `GET /health` - Health check
+`profiles` (1:1 with `auth.users`), `reviews`, `blood_requests`,
+`donor_contacts`, `request_responses`, `donation_centers`, `donations`,
+`notifications`. See `supabase/migrations/` for the full schema and RLS
+policies.

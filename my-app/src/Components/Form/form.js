@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import LoginForm from "./login-form";
 import UserDetails from "./LoginUserDetails";
-import API_BASE_URL from '../../config/api';
+import { register as registerService } from '../../services/auth.service';
 
 function ExampleV2({ onClose }) {
   const [email, setEmail] = useState("");
@@ -21,20 +21,17 @@ function ExampleV2({ onClose }) {
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
 
-  // Check if user is already logged in on component mount
+  // Check if user is already logged in on component mount (Supabase session).
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    const savedToken = localStorage.getItem("token");
-    
-    if (savedUser && savedToken) {
-      try {
-        setLoggedInUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error("Error parsing saved user data:", error);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-      }
-    }
+    let active = true;
+    import('../../services/auth.service').then(({ getCurrentUser }) => {
+      getCurrentUser().then((u) => {
+        if (active && u) setLoggedInUser(u);
+      });
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleEmailChange = (e) => {
@@ -82,56 +79,40 @@ function ExampleV2({ onClose }) {
       setIsSubmitting(true);
 
       try {
-        const response = await fetch(`${API_BASE_URL}/submit-form`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            firstName,
-            lastName,
-            mobileNumber,
-            email,
-            password,
-            location,
-            bloodGroup,
-          }),
+        await registerService({
+          firstName,
+          lastName,
+          mobileNumber,
+          email,
+          password,
+          location,
+          bloodGroup,
         });
 
-        const data = await response.json();
+        setSuccessMessage("Registration successful! You can now login.");
+        // Clear form
+        setFirstName("");
+        setLastName("");
+        setMobileNumber("");
+        setEmail("");
+        setPassword("");
+        setLocation("");
+        setBloodGroup("");
+        setErrors({});
 
-        if (response.ok) {
-          setSuccessMessage("Registration successful! You can now login.");
-          // Clear form
-          setFirstName("");
-          setLastName("");
-          setMobileNumber("");
-          setEmail("");
-          setPassword("");
-          setLocation("");
-          setBloodGroup("");
-          setErrors({});
-          
-          // Show login form after 2 seconds
-          setTimeout(() => {
-            setIsLogin(true);
-            setSuccessMessage("");
-          }, 2000);
-        } else {
-          // Handle specific error messages from backend
-          if (data.error) {
-            if (data.error.includes("already exists")) {
-              setErrors({ email: "This email is already registered. Please login." });
-            } else {
-              alert(data.error);
-            }
-          } else {
-            alert("Failed to save data. Please try again.");
-          }
-        }
+        // Show login form after 2 seconds
+        setTimeout(() => {
+          setIsLogin(true);
+          setSuccessMessage("");
+        }, 2000);
       } catch (error) {
         console.error("Error:", error);
-        alert("Network error. Please check your connection and try again.");
+        const msg = error.message || "Failed to register. Please try again.";
+        if (/already registered|already exists|already been/i.test(msg)) {
+          setErrors({ email: "This email is already registered. Please login." });
+        } else {
+          alert(msg);
+        }
       } finally {
         setIsSubmitting(false);
       }
@@ -146,8 +127,7 @@ function ExampleV2({ onClose }) {
 
   const handleLogout = () => {
     setLoggedInUser(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    import('../../services/auth.service').then(({ logout }) => logout());
   };
 
   return (

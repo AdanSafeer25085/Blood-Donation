@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import axios from 'axios';
 import Dashboard from '../Dashboard/Dashboard';
-import API_BASE_URL from '../../config/api';
+import { updateProfile } from '../../services/auth.service';
 
 function UserDetails({ user, onLogout }) {
   const [location, setLocation] = useState(user.location);
@@ -27,18 +26,11 @@ function UserDetails({ user, onLogout }) {
     setMessage("");
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/update-user-details`,
-        { userId: user.id, location, mobileNumber }
-      );
-      setMessage(response.data.message);
+      await updateProfile(user.id, { location, mobileNumber });
+      setMessage("User details updated successfully!");
       setMessageType("success");
-      
-      // Update localStorage with new data
-      const updatedUser = { ...user, location, mobileNumber };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
     } catch (error) {
-      setMessage(error.response?.data?.error || "Failed to update user details.");
+      setMessage(error.message || "Failed to update user details.");
       setMessageType("error");
     } finally {
       setIsUpdating(false);

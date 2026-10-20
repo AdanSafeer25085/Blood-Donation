@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API_BASE_URL from '../../config/api';
+import { getDonationHistory } from '../../services/donations.service';
 
 function DonationHistory({ user }) {
   const [donations, setDonations] = useState([]);
@@ -12,11 +12,8 @@ function DonationHistory({ user }) {
 
   const fetchDonationHistory = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/user-donations/${user.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setDonations(data);
-      }
+      const data = await getDonationHistory(user.id);
+      setDonations(data);
     } catch (error) {
       console.error('Error fetching donation history:', error);
     } finally {

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import API_BASE_URL from '../config/api';
+import { getDonors } from '../services/donors.service';
+import { getReviews, submitReview as submitReviewService } from '../services/reviews.service';
+import { contactDonor as contactDonorService } from '../services/bloodRequests.service';
+import { getCurrentUser } from '../services/auth.service';
 
 function FindDonorsPage() {
   const location = useLocation();
@@ -20,22 +23,14 @@ function FindDonorsPage() {
 
   const fetchDonors = async () => {
     try {
-      const donorResponse = await fetch(`${API_BASE_URL}/get-form-data`);
-      if (!donorResponse.ok) throw new Error("Failed to fetch donors");
-      const donorsData = await donorResponse.json();
+      const donorsData = await getDonors();
       setDonors(donorsData);
 
       // Fetch reviews for each donor
       const reviewsMap = {};
       for (const donor of donorsData) {
         try {
-          const reviewResponse = await fetch(
-            `${API_BASE_URL}/get-reviews/${donor.id}`
-          );
-          if (reviewResponse.ok) {
-            const donorReviews = await reviewResponse.json();
-            reviewsMap[donor.id] = donorReviews;
-          }
+          reviewsMap[donor.id] = await getReviews(donor.id);
         } catch {
           reviewsMap[donor.id] = [];
         }
@@ -57,13 +52,8 @@ function FindDonorsPage() {
     if (!review) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/submit-review`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ donorId, review }),
-      });
-
-      if (!response.ok) throw new Error("Failed to submit review");
+      const currentUser = await getCurrentUser();
+      await submitReviewService({ donorId, review, authorId: currentUser?.id });
 
       setReviews((prev) => ({
         ...prev,
@@ -79,21 +69,8 @@ function FindDonorsPage() {
   const contactDonor = async (donorId, donorName) => {
     if (requestId) {
       try {
-        const response = await fetch(`${API_BASE_URL}/contact-donor`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            requestId, 
-            donorId,
-            donorName 
-          }),
-        });
-
-        if (response.ok) {
-          alert(`Contact request sent to ${donorName}. They will be notified about your blood request.`);
-        } else {
-          throw new Error("Failed to send contact request");
-        }
+        await contactDonorService({ requestId, donorId, donorName });
+        alert(`Contact request sent to ${donorName}. They will be notified about your blood request.`);
       } catch (err) {
         console.error("Error contacting donor:", err);
         alert("Failed to contact donor. Please try calling them directly.");

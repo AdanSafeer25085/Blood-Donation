@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API_BASE_URL from '../../config/api';
+import { getNearbyDonors } from '../../services/donors.service';
 
 function NearbyDonors({ user }) {
   const [donors, setDonors] = useState([]);
@@ -16,16 +16,12 @@ function NearbyDonors({ user }) {
 
   const fetchNearbyDonors = async () => {
     try {
-      const queryParams = new URLSearchParams({
+      const data = await getNearbyDonors({
         location: user.location,
-        ...searchFilters
-      }).toString();
-      
-      const response = await fetch(`${API_BASE_URL}/nearby-donors?${queryParams}`);
-      if (response.ok) {
-        const data = await response.json();
-        setDonors(data);
-      }
+        bloodType: searchFilters.bloodType,
+        excludeId: user.id,
+      });
+      setDonors(data);
     } catch (error) {
       console.error('Error fetching nearby donors:', error);
     } finally {

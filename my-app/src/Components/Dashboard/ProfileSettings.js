@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import API_BASE_URL from '../../config/api';
+import { updateProfile } from '../../services/auth.service';
 
 function ProfileSettings({ user }) {
   const [activeTab, setActiveTab] = useState('personal');
@@ -29,42 +29,23 @@ function ProfileSettings({ user }) {
 
   const handleSaveProfile = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/update-profile/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData),
-      });
-
-      if (response.ok) {
-        alert('Profile updated successfully!');
-        // Update localStorage
-        const updatedUser = { ...user, ...profileData };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-      }
+      await updateProfile(user.id, profileData);
+      alert('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      alert(error.message || 'Failed to update profile. Please try again.');
     }
   };
 
   const handleSavePreferences = async () => {
+    // Notification preferences have no dedicated table yet; persist them
+    // per-device in localStorage so the toggles are remembered.
     try {
-      const response = await fetch(`${API_BASE_URL}/update-preferences/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(preferences),
-      });
-
-      if (response.ok) {
-        alert('Preferences updated successfully!');
-      }
+      localStorage.setItem(`preferences:${user.id}`, JSON.stringify(preferences));
+      alert('Preferences saved on this device.');
     } catch (error) {
-      console.error('Error updating preferences:', error);
-      alert('Failed to update preferences. Please try again.');
+      console.error('Error saving preferences:', error);
+      alert('Failed to save preferences. Please try again.');
     }
   };
 
