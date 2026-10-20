@@ -1,197 +1,144 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import Button from "../../Button/button.js";
+import { Link, useNavigate } from "react-router-dom";
+import { useLanguage } from "./LanguageContext";
+import { useAuth } from "../../../contexts/AuthContext";
 
 function Nav() {
-  const [isEnglish, setIsEnglish] = useState(true);
+  const { isEnglish, toggleLanguage, t } = useLanguage();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(true);
-  const [translations, setTranslations] = useState({});
-
-  const handleClick = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 35) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 35);
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  const toggleLanguage = async () => {
-    setIsEnglish(!isEnglish);
-    if (!isEnglish) {
-      return; // Already in Urdu; no need to fetch again.
-    }
-    try {
-      const response = await axios.post(
-        "https://translation.googleapis.com/language/translate/v2", // Replace with your API URL
-        {
-          q: ["Home", "Testing", "About Us", "Contact", "FAQ"], // Add all content you want to translate
-          target: "ur", // Target language
-          source: "en", // Source language
-          key: "YOUR_API_KEY" // Replace with your API key
-        }
-      );
-      const translatedData = response.data.data.translations.reduce(
-        (acc, curr, index) => {
-          acc[`key${index}`] = curr.translatedText;
-          return acc;
-        },
-        {}
-      );
-      setTranslations(translatedData);
-    } catch (error) {
-      console.error("Translation API Error:", error);
-    }
+
+  const links = [
+    { to: "/", label: t("nav.home") },
+    { to: "/find-donors", label: t("nav.findDonors") },
+    { to: "/blood-requests", label: t("nav.requests") },
+    { to: "/about", label: t("nav.about") },
+    { to: "/#faq", label: t("nav.faq") },
+  ];
+
+  const handleLogout = async () => {
+    await logout();
+    setIsMenuOpen(false);
+    navigate("/");
   };
 
+  const LangToggle = () => (
+    <button
+      type="button"
+      onClick={toggleLanguage}
+      aria-label="Toggle language"
+      className="flex items-center w-[88px] h-[38px] shadow-md rounded-full bg-[#b20e0e] cursor-pointer relative shrink-0"
+    >
+      <span className={`w-1/2 text-center text-sm font-bold z-10 ${isEnglish ? "text-white" : "text-gray-300"}`}>EN</span>
+      <span className={`w-1/2 text-center text-sm font-bold z-10 ${!isEnglish ? "text-white" : "text-gray-300"}`}>UR</span>
+      <div
+        className={`absolute bg-black rounded-full w-[42px] h-[32px] top-[3px] left-[2px] transition-transform duration-300 ${isEnglish ? "translate-x-0" : "translate-x-[42px]"} z-0`}
+      />
+    </button>
+  );
+
   return (
-    <>
-      <nav
-        className={`transition-colors duration-300 z-50 ${isScrolled ? "bg-[#eaeaee] fixed top-0 w-full" : "bg-transparent"
-          }`}
-        style={isScrolled ? { boxShadow: "0 3px 8px 0 rgb(210,214,222)" } : {}}
-      >
-        <div className="flex items-center justify-between w-full max-w-[1250px] mx-auto py-1 px-2">
-          <div className="w-[50px] md:w-[80px] h-[50px] md:h-[80px]">
-            <img
-              className="w-full h-full object-cover rounded-full"
-              src="./image/logo.png"
-              alt="Logo"
-            />
-          </div>
+    <nav
+      className={`transition-colors duration-300 z-50 ${isScrolled ? "bg-[#eaeaee] fixed top-0 w-full shadow-md" : "bg-transparent"}`}
+    >
+      <div className="flex items-center justify-between w-full max-w-[1250px] mx-auto py-1 px-3">
+        {/* Logo */}
+        <Link to="/" className="w-[50px] h-[50px] md:w-[64px] md:h-[64px] shrink-0">
+          <img className="w-full h-full object-cover rounded-full" src="/image/logo.png" alt="Heart To Heart" />
+        </Link>
 
-          {/* Sidebar for Small Screens */}
-          <div
-            className={`fixed top-0 right-0 h-full bg-white shadow-md transform transition-transform duration-300 z-40 ${isMenuOpen ? "translate-x-full" : "-translate-x-0"
-              } w-2/3 sm:w-1/2 lg:hidden`}
-          >
-            <div className="flex justify-end p-4">
-              {/* Close Icon */}
+        {/* Desktop links */}
+        <ul className="hidden lg:flex gap-7 font-semibold text-[17px]">
+          {links.map((l) => (
+            <li key={l.to}>
+              {l.to.startsWith("/#") ? (
+                <a href={l.to} className="hover:text-[#b20e0e]">{l.label}</a>
+              ) : (
+                <Link to={l.to} className="hover:text-[#b20e0e]">{l.label}</Link>
+              )}
+            </li>
+          ))}
+        </ul>
 
-            </div>
-            {/* Navigation Links */}
-            <ul className="lg:flex gap-8 font-semibold text-[18px] flex flex-col justify-center text-center">
-              <li>
-                <button type="button" className="hover:text-[#b20e0e] bg-transparent border-none">
-                  {isEnglish ? "Home" : translations.key0 || "لوڈ ہو رہا ہے"}
-                </button>
-              </li>
-              <li>
-                <button type="button" className="hover:text-[#b20e0e] bg-transparent border-none">
-                  {isEnglish ? "Testing" : translations.key1 || "لوڈ ہو رہا ہے"}
-                </button>
-              </li>
-              <li>
-                <Link to="/about" className="hover:text-[#b20e0e]">
-                  {isEnglish ? "About Us" : translations.key2 || "لوڈ ہو رہا ہے"}
+        {/* Right side */}
+        <div className="flex items-center gap-3">
+          <LangToggle />
+
+          {/* Desktop auth actions */}
+          <div className="hidden lg:flex items-center gap-3">
+            {user ? (
+              <>
+                <Link to="/dashboard" className="text-[#b20e0e] font-semibold hover:underline">
+                  {t("nav.dashboard")}
                 </Link>
-              </li>
-              <li>
-                <button type="button" className="hover:text-[#b20e0e] bg-transparent border-none">
-                  {isEnglish ? "Contact" : translations.key3 || "لوڈ ہو رہا ہے"}
+                <button onClick={handleLogout} className="bg-[#b20e0e] text-white py-1.5 px-5 rounded-md font-semibold">
+                  {t("nav.logout")}
                 </button>
-              </li>
-              <li>
-                <button type="button" className="hover:text-[#b20e0e] bg-transparent border-none">
-                  {isEnglish ? "FAQ" : translations.key4 || "لوڈ ہو رہا ہے"}
-                </button>
-              </li>
-            </ul>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-[#b20e0e] font-semibold hover:underline">
+                  {t("nav.login")}
+                </Link>
+                <Link to="/register" className="bg-[#b20e0e] text-white py-1.5 px-5 rounded-md font-semibold">
+                  {t("nav.register")}
+                </Link>
+              </>
+            )}
           </div>
 
-          {/* Desktop Nav Links */}
-          <ul className="hidden lg:flex gap-8 font-semibold text-[18px]">
-            <li>
-              <button type="button" className="hover:text-[#b20e0e] bg-transparent border-none">
-                {isEnglish ? "Home" : translations.key0 || "لوڈ ہو رہا ہے"}
-              </button>
-            </li>
-            <li>
-              <button type="button" className="hover:text-[#b20e0e] bg-transparent border-none">
-                {isEnglish ? "Testing" : translations.key1 || "لوڈ ہو رہا ہے"}
-              </button>
-            </li>
-            <li>
-              <Link to="/about" className="hover:text-[#b20e0e]">
-                {isEnglish ? "About Us" : translations.key2 || "لوڈ ہو رہا ہے"}
-              </Link>
-            </li>
-            <li>
-              <button type="button" className="hover:text-[#b20e0e] bg-transparent border-none">
-                {isEnglish ? "Contact" : translations.key3 || "لوڈ ہو رہا ہے"}
-              </button>
-            </li>
-            <li>
-              <button type="button" className="hover:text-[#b20e0e] bg-transparent border-none">
-                {isEnglish ? "FAQ" : translations.key4 || "لوڈ ہو رہا ہے"}
-              </button>
+          {/* Hamburger */}
+          <button
+            onClick={() => setIsMenuOpen((v) => !v)}
+            aria-label="Menu"
+            className="lg:hidden w-[44px] h-[44px] rounded-full flex items-center justify-center bg-black text-[#b20e0e]"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile drawer */}
+      {isMenuOpen && (
+        <div className="lg:hidden bg-white shadow-lg border-t">
+          <ul className="flex flex-col py-2 font-semibold text-[17px]">
+            {links.map((l) => (
+              <li key={l.to}>
+                {l.to.startsWith("/#") ? (
+                  <a href={l.to} onClick={() => setIsMenuOpen(false)} className="block px-5 py-3 hover:bg-gray-100">{l.label}</a>
+                ) : (
+                  <Link to={l.to} onClick={() => setIsMenuOpen(false)} className="block px-5 py-3 hover:bg-gray-100">{l.label}</Link>
+                )}
+              </li>
+            ))}
+            <li className="px-5 py-3 flex gap-3">
+              {user ? (
+                <>
+                  <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="flex-1 text-center bg-gray-100 py-2 rounded-md">{t("nav.dashboard")}</Link>
+                  <button onClick={handleLogout} className="flex-1 bg-[#b20e0e] text-white py-2 rounded-md">{t("nav.logout")}</button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setIsMenuOpen(false)} className="flex-1 text-center bg-gray-100 py-2 rounded-md">{t("nav.login")}</Link>
+                  <Link to="/register" onClick={() => setIsMenuOpen(false)} className="flex-1 text-center bg-[#b20e0e] text-white py-2 rounded-md">{t("nav.register")}</Link>
+                </>
+              )}
             </li>
           </ul>
-
-          {/* Language Toggle and Button */}
-          <div className=" flex sm:flex lg:flex items-center lg:gap-9">
-            {/* Language Toggle */}
-            <div
-              onClick={toggleLanguage}
-              className="flex items-center w-[90px] sm:w-[105px] h-[40px] sm:h-[45px] shadow-md rounded-full pl-1 bg-[#b20e0e] cursor-pointer relative"
-            >
-              <span
-                className={`w-1/2 text-center text-sm sm:text-lg font-bold ${isEnglish ? "text-white" : "text-gray-400"
-                  } z-10 relative`}
-              >
-                EN
-              </span>
-              <span
-                className={`w-1/2 text-center text-sm sm:text-lg font-bold ${!isEnglish ? "text-white" : "text-gray-400"
-                  } z-10 relative`}
-              >
-                UR
-              </span>
-              <div
-                className={`absolute bg-black rounded-full w-[45px] h-[35px] sm:w-[50px] sm:h-[40px] top-[2px] transition-transform ${isEnglish
-                    ? "transform translate-x-0"
-                    : "transform translate-x-full"
-                  } z-0`}
-              />
-            </div>
-            <Button />
-          </div>
-          {/* Hamburger Menu */}
-          <div className="lg:hidden border-2 border-black w-[50px] md:w-[80px] h-[50px] md:h-[80px] rounded-full flex justify-center bg-black">
-            <button
-              onClick={handleClick}
-              className="lg:hidden text-[#b20e0e] focus:outline-none z-50"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
-            </button>
-          </div>
         </div>
-      </nav>
-    </>
+      )}
+    </nav>
   );
 }
 

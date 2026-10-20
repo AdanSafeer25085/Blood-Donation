@@ -1,30 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLanguage } from '../Header/Nav/LanguageContext';
 
 const FAQ = () => {
+  const { t } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(null);
   const contentRefs = useRef([]);
 
   const faqs = [
-    {
-      question: "Who can donate blood?",
-      answer: "Healthy individuals aged 18-65, weighing at least 50kg, can donate blood."
-    },
-    {
-      question: "How often can I donate blood?",
-      answer: "You can donate whole blood every 8 weeks, and platelets every 2 weeks."
-    },
-    {
-      question: "Is blood donation safe?",
-      answer: "Yes, blood donation is a safe process. Sterile equipment is used for every donation."
-    },
-    {
-      question: "What should I do before donating blood?",
-      answer: "Drink plenty of water, have a nutritious meal, and avoid alcohol for 24 hours before donating."
-    },
-    {
-      question: "How long does the donation process take?",
-      answer: "The entire process usually takes about an hour, while the actual donation takes about 10 minutes."
-    }
+    { question: t('faq.q1'), answer: t('faq.a1') },
+    { question: t('faq.q2'), answer: t('faq.a2') },
+    { question: t('faq.q3'), answer: t('faq.a3') },
+    { question: t('faq.q4'), answer: t('faq.a4') },
+    { question: t('faq.q5'), answer: t('faq.a5') },
   ];
 
   const toggleFAQ = (index) => {
@@ -44,11 +31,10 @@ const FAQ = () => {
   }, [activeIndex]);
 
   return (
-    <div className="faq bg-gray-100 p-6">
+    <div id="faq" className="faq bg-gray-100 p-6 scroll-mt-24">
       <div className="max-w-[1250px] m-auto">
-        <div className="text-center text-[#b20e0e] group">
-          <h1 className="text-3xl font-bold mb-4 group-hover:hidden">FAQs</h1>
-          <h1 className="text-3xl font-bold mb-4 hidden group-hover:block">Frequently Asked Questions</h1>
+        <div className="text-center text-[#b20e0e]">
+          <h1 className="text-3xl font-bold mb-6">{t('faq.title')}</h1>
         </div>
         <ul className="space-y-4">
           {faqs.map((faq, index) => (

@@ -1,71 +1,46 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useLanguage } from "../Header/Nav/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
+
+  const links = [
+    { to: "/", label: t("nav.home") },
+    { to: "/find-donors", label: t("nav.findDonors") },
+    { to: "/blood-requests", label: t("nav.requests") },
+    { to: "/about", label: t("nav.about") },
+  ];
+
   return (
-    <footer className="bg-[#eaeaee] text-black py-6">
-      <div className="max-w-[1250px] mx-auto px-4">
-        {/* Top Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* About Section */}
+    <footer className="bg-[#eaeaee] text-black py-8">
+      <div className="max-w-[1250px] mx-auto px-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* About */}
           <div>
-            <h2 className="text-lg font-bold mb-3 text-[#b20e0e]">About Us</h2>
-            <p className="text-sm text-black">
-              We are committed to saving lives through blood donation. Join us
-              to make a difference by donating blood or supporting our cause.
-            </p>
+            <h2 className="text-lg font-bold mb-3 text-[#b20e0e]">{t("footer.aboutTitle")}</h2>
+            <p className="text-sm text-gray-700">{t("footer.aboutText")}</p>
           </div>
 
-          {/* Navigation Links */}
+          {/* Links */}
           <div>
-            <h2 className="text-lg font-bold mb-3 text-[#b20e0e]">Quick Links</h2>
+            <h2 className="text-lg font-bold mb-3 text-[#b20e0e]">{t("footer.quickLinks")}</h2>
             <ul className="space-y-2">
+              {links.map((l) => (
+                <li key={l.to} className="list-disc ml-5">
+                  <Link to={l.to} className="hover:text-[#b20e0e]">{l.label}</Link>
+                </li>
+              ))}
               <li className="list-disc ml-5">
-                <a href="/home" className="hover:text-[#b20e0e] group">
-                <span className="relative">
-                  Home
-                  <span class="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
-                  </span>
-                </a>
-              </li>
-              <li className="list-disc ml-5">
-              <a href="/home" className="hover:text-[#b20e0e] group">
-                <span className="relative">
-                  Testing
-                  <span class="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
-                  </span>
-                </a>
-              </li>
-              <li className="list-disc ml-5">
-              <a href="/home" className="hover:text-[#b20e0e] group">
-                <span className="relative">
-                  About Us
-                  <span class="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
-                  </span>
-                </a>
-              </li>
-              <li className="list-disc ml-5">
-              <a href="/home" className="hover:text-[#b20e0e] group">
-                <span className="relative">
-                  Contact Us
-                  <span class="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
-                  </span>
-                </a>
-              </li>
-              <li className="list-disc ml-5">
-              <a href="/home" className="hover:text-[#b20e0e] group">
-                <span className="relative">
-                  FAQs
-                  <span class="absolute left-0 bottom-0 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
-                  </span>
-                </a>
+                <a href="/#faq" className="hover:text-[#b20e0e]">{t("nav.faq")}</a>
               </li>
             </ul>
           </div>
 
-          {/* Contact Section */}
+          {/* Contact */}
           <div>
-            <h2 className="text-lg font-bold mb-3 text-[#b20e0e]">Contact Us</h2>
-            <ul className="text-sm text-black space-y-2">
+            <h2 className="text-lg font-bold mb-3 text-[#b20e0e]">{t("footer.contact")}</h2>
+            <ul className="text-sm text-gray-700 space-y-2">
               <li>Email: support@blooddonation.com</li>
               <li>Phone: +123 456 7890</li>
               <li>Address: 123 Blood Drive, Life City</li>
@@ -73,10 +48,9 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="mt-6 border-t border-gray-700 pt-4 text-center">
+        <div className="mt-6 border-t border-gray-400 pt-4 text-center">
           <p className="text-sm text-[#b20e0e]">
-            &copy; 2024 Blood Donation. All Rights Reserved.
+            &copy; 2024 Heart-To-Heart. {t("footer.rights")}
           </p>
         </div>
       </div>

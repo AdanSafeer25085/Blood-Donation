@@ -263,18 +263,27 @@ function FindDonorsPage() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 mb-4">
-                  <button
-                    onClick={() => contactDonor(donor.id, `${donor.firstName} ${donor.lastName}`)}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-medium"
-                    disabled={!requestId}
-                  >
-                    {requestId ? 'Contact Donor' : 'Call Now'}
-                  </button>
+                  {requestId && (
+                    <button
+                      onClick={() => contactDonor(donor.id, `${donor.firstName} ${donor.lastName}`)}
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-medium"
+                    >
+                      Notify Donor
+                    </button>
+                  )}
                   <a
                     href={`tel:${donor.mobileNumber}`}
                     className="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm font-medium text-center"
                   >
-                    Call Directly
+                    📞 Call Donor
+                  </a>
+                  <a
+                    href={`https://wa.me/${(donor.mobileNumber || '').replace(/[^0-9]/g, '').replace(/^0/, '92')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-sm font-medium text-center"
+                  >
+                    WhatsApp
                   </a>
                 </div>
 

@@ -1,34 +1,42 @@
 // components/DonationProcess.jsx
 import React from 'react';
+import { useLanguage } from '../Header/Nav/LanguageContext';
 
 const DonationProcess = () => {
-  const steps = [
-    'You can register as a donor or apply to receive blood from registered donors.',
-    'Click on the register button',
-    'If you want to donate blood choose first Option',
-    'If you want to recieve blood select second option',
-    'If your reports are ok you can login as a donner',
-    'If you fulfill the requirenments to get blood you will be given',
-    'Find the nearest person to you and get blood',
-  ];
+  const { t } = useLanguage();
+
+  const donorSteps = [t('process.donor1'), t('process.donor2'), t('process.donor3')];
+  const recipientSteps = [t('process.recipient1'), t('process.recipient2'), t('process.recipient3')];
+
+  const Column = ({ title, icon, steps, accent }) => (
+    <div className="bg-white rounded-xl shadow-md p-6 flex-1">
+      <div className="flex items-center gap-3 mb-5">
+        <span className="text-3xl">{icon}</span>
+        <h3 className={`text-xl font-bold ${accent}`}>{title}</h3>
+      </div>
+      <ol className="space-y-4">
+        {steps.map((step, i) => (
+          <li key={i} className="flex items-start gap-3">
+            <span className={`shrink-0 w-7 h-7 rounded-full text-white text-sm font-bold flex items-center justify-center ${accent === 'text-[#b20e0e]' ? 'bg-[#b20e0e]' : 'bg-blue-600'}`}>
+              {i + 1}
+            </span>
+            <span className="text-gray-700 text-sm md:text-base">{step}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
 
   return (
-    <div className="bg-white py-12 px-6">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#b20e0e] mb-6 text-center">
-          Donation Process
+    <div className="bg-gray-50 py-14 px-5">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-[#b20e0e] mb-10 text-center">
+          {t('process.title')}
         </h2>
-        <ul className="space-y-3">
-          {steps.map((step, index) => (
-            <li
-              key={index}
-              className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-4 bg-gray-100 p-4 rounded-md shadow-md"
-            >
-              <span className="text-[#b20e0e] font-bold text-lg">{index + 1}.</span>
-              <span className="text-gray-700 text-sm md:text-base">{step}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-col md:flex-row gap-6">
+          <Column title={t('process.donorTitle')} icon="🩸" steps={donorSteps} accent="text-[#b20e0e]" />
+          <Column title={t('process.recipientTitle')} icon="🆘" steps={recipientSteps} accent="text-blue-600" />
+        </div>
       </div>
     </div>
   );
