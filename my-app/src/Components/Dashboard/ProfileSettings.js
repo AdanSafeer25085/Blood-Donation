@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { updateProfile } from '../../services/auth.service';
+import { Icon } from '../icons';
 
 function ProfileSettings({ user }) {
   const [activeTab, setActiveTab] = useState('personal');
@@ -376,23 +377,23 @@ function ProfileSettings({ user }) {
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile Settings</h2>
 
       {/* Tab Navigation */}
-      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6 w-fit">
+      <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-lg mb-6">
         {[
-          { key: 'personal', label: 'Personal Info', icon: '👤' },
-          { key: 'emergency', label: 'Emergency Contacts', icon: '🚨' },
-          { key: 'medical', label: 'Medical Info', icon: '💊' },
-          { key: 'preferences', label: 'Preferences', icon: '⚙️' }
+          { key: 'personal', label: 'Personal Info', icon: 'profile' },
+          { key: 'emergency', label: 'Emergency Contacts', icon: 'request' },
+          { key: 'medical', label: 'Medical Info', icon: 'health' },
+          { key: 'preferences', label: 'Preferences', icon: 'bell' }
         ].map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === tab.key
-                ? 'bg-white text-red-600 shadow-sm'
+                ? 'bg-white text-[#b20e0e] shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <span className="mr-2">{tab.icon}</span>
+            <Icon name={tab.icon} className="w-4 h-4" />
             {tab.label}
           </button>
         ))}

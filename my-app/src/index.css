@@ -5,6 +5,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Guard against any element forcing a sideways page scroll on mobile.
+     Applied to body (not an in-page container) so it does not break
+     position: sticky headers/sidebars. */
+  overflow-x: hidden;
 }
 html {
   scroll-behavior: smooth;

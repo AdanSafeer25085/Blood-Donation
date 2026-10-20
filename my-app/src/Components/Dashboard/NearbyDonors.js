@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getNearbyDonors } from '../../services/donors.service';
+import { Icon } from '../icons';
 
 function NearbyDonors({ user }) {
   const [donors, setDonors] = useState([]);
@@ -93,59 +94,32 @@ function NearbyDonors({ user }) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-          <div className="flex items-center">
-            <div className="text-red-600 text-2xl mr-3">👥</div>
-            <div>
-              <p className="text-sm font-medium text-red-600">Total Donors</p>
-              <p className="text-2xl font-bold text-red-900">{donors.length}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        {[
+          { label: 'Total Donors', value: donors.length, icon: 'users' },
+          { label: 'Available', value: donors.filter(d => d.available).length, icon: 'checkCircle' },
+          { label: `Your Type (${user.bloodGroup || '—'})`, value: donors.filter(d => d.bloodGroup === user.bloodGroup).length, icon: 'droplet' },
+          { label: 'Nearby', value: donors.filter(d => Number(d.distance) <= 5).length, icon: 'mapPin' },
+        ].map((s) => (
+          <div key={s.label} className="bg-white border border-gray-100 shadow-sm p-4 rounded-xl">
+            <div className="flex items-center gap-3">
+              <span className="shrink-0 w-10 h-10 rounded-full bg-red-50 text-[#b20e0e] flex items-center justify-center">
+                <Icon name={s.icon} className="w-5 h-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-gray-500 truncate">{s.label}</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{s.value}</p>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-          <div className="flex items-center">
-            <div className="text-green-600 text-2xl mr-3">✅</div>
-            <div>
-              <p className="text-sm font-medium text-green-600">Available</p>
-              <p className="text-2xl font-bold text-green-900">
-                {donors.filter(d => d.available).length}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-          <div className="flex items-center">
-            <div className="text-blue-600 text-2xl mr-3">🩸</div>
-            <div>
-              <p className="text-sm font-medium text-blue-600">Your Type ({user.bloodGroup})</p>
-              <p className="text-2xl font-bold text-blue-900">
-                {donors.filter(d => d.bloodGroup === user.bloodGroup).length}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
-          <div className="flex items-center">
-            <div className="text-purple-600 text-2xl mr-3">📍</div>
-            <div>
-              <p className="text-sm font-medium text-purple-600">Nearby</p>
-              <p className="text-2xl font-bold text-purple-900">
-                {donors.filter(d => d.distance <= 5).length}
-              </p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Donors List */}
       <div className="space-y-4">
         {donors.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
+            <Icon name="users" className="w-14 h-14 mx-auto mb-4 text-gray-300" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No donors found</h3>
             <p className="text-gray-500">Try adjusting your search filters to find more donors.</p>
           </div>
