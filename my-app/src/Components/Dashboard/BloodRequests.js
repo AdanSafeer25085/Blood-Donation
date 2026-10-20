@@ -137,18 +137,18 @@ function BloodRequests({ user }) {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Blood Requests</h2>
-        <button 
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Blood Requests</h2>
+        <button
           onClick={() => setShowCreateRequest(true)}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+          className="bg-[#b20e0e] hover:bg-red-800 text-white px-4 py-2 rounded-lg text-sm font-medium"
         >
           + Create Request
         </button>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6 w-fit">
+      <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-lg mb-6">
         <button
           onClick={() => setActiveTab('available')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -223,7 +223,7 @@ function BloodRequests({ user }) {
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6 w-fit">
+          <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-lg mb-6">
             {[
               { key: 'compatible', label: 'Compatible with You', count: requests.filter(r => isCompatible(r.bloodType, user.bloodGroup)).length },
               { key: 'urgent', label: 'Urgent', count: requests.filter(r => r.priority === 'critical' || r.priority === 'urgent').length },
@@ -264,7 +264,7 @@ function BloodRequests({ user }) {
                     isCompatible(request.bloodType, user.bloodGroup) ? 'border-green-200 bg-green-50' : 'border-gray-200'
                   }`}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                     <div className="flex-1">
                       <div className="flex items-center mb-3">
                         <h3 className="text-lg font-semibold text-gray-900 mr-3">
@@ -324,7 +324,7 @@ function BloodRequests({ user }) {
                       )}
                     </div>
 
-                    <div className="ml-4 flex flex-col space-y-2">
+                    <div className="flex flex-row flex-wrap sm:flex-col gap-2 sm:ml-4">
                       {isCompatible(request.bloodType, user.bloodGroup) ? (
                         <>
                           <button 
@@ -430,7 +430,7 @@ function BloodRequests({ user }) {
             ) : (
               myRequests.map((request) => (
                 <div key={request.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                     <div className="flex-1">
                       <div className="flex items-center mb-3">
                         <h3 className="text-lg font-semibold text-gray-900 mr-3">
@@ -489,7 +489,7 @@ function BloodRequests({ user }) {
                       </div>
                     </div>
 
-                    <div className="ml-4 flex flex-col space-y-2 min-w-[120px]">
+                    <div className="flex flex-row sm:flex-col gap-2 sm:ml-4 sm:min-w-[120px]">
                       {request.status === 'active' && (
                         <>
                           <button 

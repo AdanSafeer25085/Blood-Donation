@@ -168,7 +168,7 @@ function Notifications({ user, notifications: initialNotifications }) {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6 w-fit">
+      <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-lg mb-6">
         {[
           { key: 'all', label: 'All', count: notifications.length },
           { key: 'unread', label: 'Unread', count: notifications.filter(n => !n.read).length },

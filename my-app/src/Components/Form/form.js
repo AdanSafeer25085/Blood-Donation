@@ -137,7 +137,7 @@ function ExampleV2({ onClose }) {
           <div className="text-center">
             <img
               className="mx-auto w-24 md:w-32 lg:w-48 rounded-full"
-              src="./image/logo.png"
+              src="/image/logo.png"
               alt="logo"
             />
             <h4 className="mb-6 mt-2 text-black text-lg md:text-xl lg:text-2xl font-semibold">
